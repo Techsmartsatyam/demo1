@@ -1,0 +1,353 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Multi-Teacher Student Portal</title>
+  <link rel="shortcut icon" href="logo.jpg" type="image/x-icon">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    body { font-family: Arial, sans-serif; margin:0; padding:0; background:#f5f6fa; }
+    header { background:#2c3e50; color:white; padding:1rem; text-align:center; }
+    nav { display:flex; justify-content:center; gap:15px; background:#34495e; flex-wrap:wrap; }
+    nav button {
+      background:#1abc9c; border:none; padding:10px 15px; color:white; 
+      border-radius:5px; cursor:pointer; transition:0.3s;
+    }
+    nav button:hover { background:#16a085; transform:scale(1.05); }
+    .container { padding:1rem; }
+    .hidden { display:none; }
+    .card {
+      background:white; padding:1rem; margin:10px 0; border-radius:8px;
+      box-shadow:0 2px 6px rgba(0,0,0,0.1);
+    }
+    input, textarea, select {
+      padding:8px; margin:5px 0; width:100%; border:1px solid #ccc; border-radius:5px;
+    }
+    .btn {
+      background:#3498db; color:white; border:none; padding:5px 10px;
+      border-radius:5px; cursor:pointer; transition:0.3s;
+    }
+    .btn:hover { background:#2980b9; }
+    .flex { display:flex; flex-wrap:wrap; gap:10px; }
+    .half { flex:1 1 45%; }
+    canvas { max-width:250px !important; margin:auto; display:block; }
+    img { border-radius:6px; margin:5px 0; }
+    @media(max-width:600px){
+      .half { flex:1 1 100%; }
+      nav { flex-direction:column; }
+    }
+    #popup { position: fixed; top:20px; right:20px; background:#27ae60; color:white; padding:12px 20px;
+      border-radius:6px; box-shadow:0 4px 10px rgba(0,0,0,0.2); opacity:0; transform:translateY(-20px);
+      transition: all 0.3s ease; z-index:9999; }
+    #popup.show { opacity:1; transform:translateY(0); }
+    .card{
+  background-color:aqua;
+  box-shadow: 0 0 80px 20px;
+  border-radius: 15px;
+  transition-duration: 0.2ms;
+}
+.card:hover{
+  cursor: pointer;
+  color:darkgreen
+}
+#username{
+  background-color: black;
+  color: whitesmoke;
+  font-size: 20px;
+  border-radius: 30px;
+  border-top: solid 3px red;
+  border-bottom:solid 3px yellow; 
+}
+#password{
+    background-color: black;
+  color: whitesmoke;
+  font-size: 20px;
+  border-radius: 30px;
+  border-top: solid 3px red;
+  border-bottom:solid 3px yellow;
+}
+.btn{
+  background-color: brown;
+  border-radius: 30px;
+}
+.btn:hover{
+  cursor: pointer;
+  color:black;
+  box-shadow: 0 0 80px 20px;
+}
+#sat{
+  border-radius: 30px;
+}
+#manageContent{
+  background-color:cadetblue;
+}
+#teacherPortal{
+  background-color:fuchsia;
+  color:black;
+  font-size: 20px;
+}
+#sat1{
+  background-color:darkorange;
+  border-radius: 30px;
+  box-shadow: 0 0 80px 20px;
+  margin: 10px;
+  color:black;
+  font-size: 20px;
+  text-decoration: underline;
+}
+#songsCorner{
+  background-color: #2980b9;
+  color: brown;
+}
+#satyam{
+border-radius: 30px;
+border-bottom-left-radius: 40px;
+border-top-left-radius: 100px;
+
+}
+  </style>
+</head>
+<body>
+<header>
+  <h1>📚 Learnexa <img id="satyam"  src="logo.jpg" width="100"></h1>
+  <h3> Made by Satyam</h3>
+</header>
+
+<div id="popup"></div>
+
+<!-- AUTH SECTION -->
+<div class="container" id="authSection">
+  <div class="card">
+    <h2>Login / Register</h2>
+    <select id="roleSelect">
+      <option value="teacher">Teacher</option>
+      <option value="student">Student</option>
+    </select>
+    <input id="username" placeholder="Username">
+    <input id="password" placeholder="Password" type="password">
+    <button class="btn" onclick="register()">Register</button>
+    <button class="btn" onclick="login()">Login</button>
+    <hr>
+    <h3>➕ Add New Teacher</h3>
+    <input id="newTeacherName" placeholder="New Teacher Username">
+    <input id="newTeacherPass" type="password" placeholder="New Teacher Password">
+    <button class="btn" onclick="addNewTeacher()">Add Teacher</button>
+  </div>
+</div>
+
+<!-- TEACHER PORTAL -->
+<div class="container hidden" id="teacherPortal">
+  <h2>👩‍🏫 Teacher Dashboard (<span id="teacherName"></span>)</h2>
+  <nav>
+    <button id="sat1"  onclick="showSection('manageStudents')">Manage Students</button>
+    <button  id="sat1"  onclick="showSection('manageContent')">Manage Content</button>
+    <button  id="sat1"  onclick="showSection('viewHistory')">View History</button>
+    <button  id="sat1"  onclick="logout()">Logout</button>
+  </nav>
+
+  <div id="manageStudents" class="card hidden">
+    <h3   >Manage Students</h3>
+    <input id="newStudent" placeholder="Student Username">
+    <input id="newStudentPass" type="password" placeholder="Student Password">
+    <button class="btn" onclick="addStudent()">Add Student</button>
+    <ul id="studentList"></ul>
+  </div>
+
+  <div id="manageContent" class="card hidden">
+    <h3 id="sat"  >Manage Content</h3>
+    <div class="flex">
+      <div class="half">
+        <h4 id="sat" >Add Question</h4>
+        <textarea id="newQuestion" placeholder="Question text"></textarea>
+        <input id="newAnswer" placeholder="Correct Answer">
+        <button class="btn" onclick="addQuestion()">Add Question</button>
+        <div id="questionList"></div>
+      </div>
+      <div class="half">
+        <h4 id="sat" >Add Song</h4>
+        <input id="newSong" placeholder="Song URL">
+        <button class="btn" onclick="addSong()">Add Song</button>
+        <ul id="songListTeacher"></ul>
+      </div>
+      <div class="half">
+        <h4 id="sat" >Add Video</h4>
+        <input id="newVideo" placeholder="Video URL">
+        <button class="btn" onclick="addVideo()">Add Video</button>
+        <ul id="videoListTeacher"></ul>
+      </div>
+      <div class="half">
+        <h4 id="sat" >Add Study Material</h4>
+        <select id="materialType">
+          <option value="text">Text</option>
+          <option value="pdf">PDF</option>
+          <option value="img">Image</option>
+          <option value="link">Link</option>
+        </select>
+        <input id="newMaterial" placeholder="Content / URL">
+        <button class="btn" onclick="addMaterial()">Add Material</button>
+        <ul id="materialListTeacher"></ul>
+      </div>
+    </div>
+  </div>
+
+  <div id="viewHistory" class="card hidden">
+    <h3>Students History</h3>
+    <div id="historyContent"></div>
+  </div>
+</div>
+
+<!-- STUDENT PORTAL -->
+<div class="container hidden" id="studentPortal">
+  <h2>👨‍🎓 Student Dashboard (<span id="studentName"></span>)</h2>
+  <nav>
+    <button  id="sat1"  onclick="showStudentSection('studyCorner')">Study Corner</button>
+    <button  id="sat1"  onclick="showStudentSection('songsCorner')">Songs</button>
+    <button  id="sat1"  onclick="showStudentSection('videosCorner')">Videos</button>
+    <button   id="sat1" onclick="showStudentSection('testCorner')">Take Test</button>
+    <button   id="sat1" onclick="showStudentSection('leaderboard')">Leaderboard</button>
+    <button   id="sat1" onclick="logout()">Logout</button>
+  </nav>
+
+  <div id="studyCorner" class="card hidden">
+    <h3>Study Material</h3>
+    <ul id="studyList"></ul>
+  </div>
+
+  <div id="songsCorner" class="card hidden">
+    <h3>🎵 Songs/Audio Notes</h3>
+    <ul id="songList"></ul>
+  </div>
+
+  <div id="videosCorner" class="card hidden">
+    <h3>🎥 Videos Lecture</h3>
+    <ul id="videoList"></ul>
+  </div>
+
+  <div id="testCorner" class="card hidden">
+    <h3>Test</h3>
+    <div id="testArea"></div>
+  </div>
+
+  <div id="leaderboard" class="card hidden">
+    <h3>Leaderboard</h3>
+    <ul id="leaderboardList"></ul>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+   const firebaseConfig = {
+    apiKey: "AIzaSyD0WIwiIJhLrQDN6T8lGdJ2hKvIcAL0Dk8",
+    authDomain: "learnexa-portal.firebaseapp.com",
+    databaseURL: "https://learnexa-portal-default-rtdb.firebaseio.com",
+    projectId: "learnexa-portal",
+    storageBucket: "learnexa-portal.firebasestorage.app",
+    messagingSenderId: "422374067443",
+    appId: "1:422374067443:web:3b17b418678b31a7fb7b86",
+    measurementId: "G-34CY6327P1"
+  };
+let teachers = JSON.parse(localStorage.getItem("teachers")||"{}");
+let currentTeacher=null, currentStudent=null;
+function save(){ localStorage.setItem("teachers",JSON.stringify(teachers)); }
+function popup(msg){ const p=document.getElementById("popup"); p.textContent=msg; p.classList.add("show"); setTimeout(()=>p.classList.remove("show"),2000); }
+
+function register(){ const role=document.getElementById("roleSelect").value;
+  const u=document.getElementById("username").value.trim(); const p=document.getElementById("password").value;
+  if(role==="teacher"){ if(teachers[u]) return popup("Teacher already exists ❌");
+    teachers[u]={password:p, students:{}, questions:[], songs:[], videos:[], materials:[]}; save(); popup("Teacher registered ✅");
+  }else{ popup("Students can only be added by teachers ❌"); } }
+
+function login(){ const role=document.getElementById("roleSelect").value;
+  const u=document.getElementById("username").value.trim(); const p=document.getElementById("password").value;
+  if(role==="teacher"){ if(teachers[u] && teachers[u].password===p){ currentTeacher=u;
+      document.getElementById("teacherName").textContent=u;
+      document.getElementById("authSection").classList.add("hidden");
+      document.getElementById("teacherPortal").classList.remove("hidden");
+      renderAllTeacherContent();
+    }else popup("Invalid teacher login ❌");
+  }else{
+    for(const t in teachers){ if(teachers[t].students[u] && teachers[t].students[u].password===p){
+        currentStudent={teacher:t, name:u}; document.getElementById("studentName").textContent=u;
+        document.getElementById("authSection").classList.add("hidden");
+        document.getElementById("studentPortal").classList.remove("hidden"); loadStudentData(); return; } }
+    popup("Invalid student login ❌"); } }
+
+function logout(){ currentTeacher=null; currentStudent=null;
+  document.getElementById("authSection").classList.remove("hidden");
+  document.getElementById("teacherPortal").classList.add("hidden");
+  document.getElementById("studentPortal").classList.add("hidden"); }
+
+function showSection(id){ ["manageStudents","manageContent","viewHistory"].forEach(s=>document.getElementById(s).classList.add("hidden"));
+  document.getElementById(id).classList.remove("hidden"); if(id==="manageStudents") renderStudents(); if(id==="viewHistory") renderHistory(); }
+function showStudentSection(id){ ["studyCorner","songsCorner","videosCorner","testCorner","leaderboard"].forEach(s=>document.getElementById(s).classList.add("hidden"));
+  document.getElementById(id).classList.remove("hidden"); if(id==="studyCorner") renderStudy(); if(id==="songsCorner") renderSongs(); if(id==="videosCorner") renderVideos(); if(id==="testCorner") startTest(); if(id==="leaderboard") renderLeaderboard(); }
+
+function addStudent(){ const u=document.getElementById("newStudent").value.trim(); const p=document.getElementById("newStudentPass").value;
+  if(!u||!p) return popup("Enter valid details ❌"); teachers[currentTeacher].students[u]={password:p, fee:null, history:[], activities:{songs:[],videos:[],materials:[]}};
+  save(); renderStudents(); popup("Student Added ✅"); }
+
+function renderStudents(){ const list=document.getElementById("studentList"); list.innerHTML="";
+  for(const s in teachers[currentTeacher].students){ const st=teachers[currentTeacher].students[s];
+    const li=document.createElement("li");
+    li.innerHTML = `<b>${s}</b> | Fee: ${st.fee ? "₹"+st.fee : "Not set"}
+      <input type="number" placeholder="Set Fee" id="fee-${s}" style="width:80px;margin-left:10px;">
+      <button class="btn" onclick="updateFee('${s}')">💰 Update Fee</button>
+      <button class="btn" onclick="removeStudent('${s}')">❌ Remove</button>`; list.appendChild(li); } }
+function updateFee(student){ const feeVal=document.getElementById("fee-"+student).value; if(!feeVal) return popup("Enter valid fee ❌");
+  teachers[currentTeacher].students[student].fee=feeVal; save(); renderStudents(); popup("Fee updated ✅"); }
+function removeStudent(student){ if(confirm("Remove "+student+"?")){ delete teachers[currentTeacher].students[student]; save(); renderStudents(); popup("Student removed ✅"); } }
+
+function addQuestion(){ const q=document.getElementById("newQuestion").value; const a=document.getElementById("newAnswer").value;
+  if(q&&a){ teachers[currentTeacher].questions.push({q,a}); save(); popup("Question Added ✅"); renderQuestions(); } }
+function addSong(){ const url=document.getElementById("newSong").value; if(url){ teachers[currentTeacher].songs.push(url); save(); popup("Song Added ✅"); renderSongsTeacher(); } }
+function addVideo(){ const url=document.getElementById("newVideo").value; if(url){ teachers[currentTeacher].videos.push(url); save(); popup("Video Added ✅"); renderVideosTeacher(); } }
+function addMaterial(){ const type=document.getElementById("materialType").value; const val=document.getElementById("newMaterial").value;
+  if(val){ teachers[currentTeacher].materials.push({type:type,value:val}); save(); popup("Study Material Added ✅"); renderMaterialsTeacher(); } }
+
+// REMOVE functions
+function removeQuestion(i){ teachers[currentTeacher].questions.splice(i,1); save(); popup("Question Removed ✅"); renderQuestions(); }
+function removeSong(i){ teachers[currentTeacher].songs.splice(i,1); save(); popup("Song Removed ✅"); renderSongsTeacher(); }
+function removeVideo(i){ teachers[currentTeacher].videos.splice(i,1); save(); popup("Video Removed ✅"); renderVideosTeacher(); }
+function removeMaterial(i){ teachers[currentTeacher].materials.splice(i,1); save(); popup("Material Removed ✅"); renderMaterialsTeacher(); }
+
+// RENDER for teacher
+function renderQuestions(){ const c=document.getElementById("questionList"); c.innerHTML=""; teachers[currentTeacher].questions.forEach((q,i)=>{
+  const div=document.createElement("div"); div.innerHTML=`Q: ${q.q} | Ans: ${q.a} <button class="btn" onclick="removeQuestion(${i})">❌ Remove</button>`; c.appendChild(div); }); }
+function renderSongsTeacher(){ const l=document.getElementById("songListTeacher"); l.innerHTML=""; teachers[currentTeacher].songs.forEach((u,i)=>{ const li=document.createElement("li");
+  li.innerHTML=`<audio controls src="${u}"></audio> <button class="btn" onclick="removeSong(${i})">❌ Remove</button>`; l.appendChild(li); }); }
+function renderVideosTeacher(){ const l=document.getElementById("videoListTeacher"); l.innerHTML=""; teachers[currentTeacher].videos.forEach((u,i)=>{ const li=document.createElement("li");
+  li.innerHTML=`<video width="200" controls src="${u}"></video> <button class="btn" onclick="removeVideo(${i})">❌ Remove</button>`; l.appendChild(li); }); }
+function renderMaterialsTeacher(){ const l=document.getElementById("materialListTeacher"); l.innerHTML=""; teachers[currentTeacher].materials.forEach((m,i)=>{ const li=document.createElement("li");
+  let content=""; if(m.type==="text") content=m.value; else if(m.type==="pdf") content=`📄 <a href="${m.value}" target="_blank">Open PDF</a>`;
+  else if(m.type==="img") content=`<img src="${m.value}" width="100">`; else if(m.type==="link") content=`🔗 <a href="${m.value}" target="_blank">${m.value}</a>`;
+  li.innerHTML=content+` <button class="btn" onclick="removeMaterial(${i})">❌ Remove</button>`; l.appendChild(li); }); }
+function renderAllTeacherContent(){ renderQuestions(); renderSongsTeacher(); renderVideosTeacher(); renderMaterialsTeacher(); }
+
+function renderHistory(){ const c=document.getElementById("historyContent"); c.innerHTML=""; const st=teachers[currentTeacher].students;
+  for(const s in st){ const div=document.createElement("div");
+    div.innerHTML=`<b>${s}</b><br>Fee: ${st[s].fee? "₹"+st[s].fee:"Not set"}<br>History: ${JSON.stringify(st[s].history)}<br>`; c.appendChild(div); } }
+
+function loadStudentData(){ renderStudy(); renderSongs(); renderVideos(); }
+function renderStudy(){ const l=document.getElementById("studyList"); l.innerHTML=""; teachers[currentStudent.teacher].materials.forEach(m=>{ const li=document.createElement("li");
+  if(m.type==="text") li.textContent=m.value; else if(m.type==="pdf") li.innerHTML=`📄 <a href="${m.value}" target="_blank">Open PDF</a>`; else if(m.type==="img") li.innerHTML=`<img src="${m.value}" width="200">`; else if(m.type==="link") li.innerHTML=`🔗 <a href="${m.value}" target="_blank">${m.value}</a>`;
+  l.appendChild(li); }); }
+function renderSongs(){ const l=document.getElementById("songList"); l.innerHTML=""; teachers[currentStudent.teacher].songs.forEach(u=>{ const li=document.createElement("li"); li.innerHTML=`<audio controls src="${u}"></audio>`; l.appendChild(li); }); }
+function renderVideos(){ const l=document.getElementById("videoList"); l.innerHTML=""; teachers[currentStudent.teacher].videos.forEach(u=>{ const li=document.createElement("li"); li.innerHTML=`<video width="200" controls src="${u}"></video>`; l.appendChild(li); }); }
+
+// Test + leaderboard functions unchanged ...
+function startTest(){ const a=document.getElementById("testArea"); const qs=teachers[currentStudent.teacher].questions; if(!qs.length){ a.textContent="No questions added yet"; return; }
+  a.innerHTML=""; qs.forEach((q,i)=>{ const d=document.createElement("div"); d.innerHTML=`${q.q}<br><input id="ans${i}"><br>`; a.appendChild(d); });
+  const b=document.createElement("button"); b.textContent="Submit"; b.className="btn"; b.onclick=submitTest; a.appendChild(b); }
+function submitTest(){ const qs=teachers[currentStudent.teacher].questions; let s=0; qs.forEach((q,i)=>{ const ans=document.getElementById("ans"+i).value.trim();
+  if(ans.toLowerCase()===q.a.toLowerCase()) s++; }); const sc={score:s,total:qs.length}; teachers[currentStudent.teacher].students[currentStudent.name].history.push(sc);
+  save(); popup("Test submitted ✅"); renderLeaderboard(); }
+function renderLeaderboard(){ const l=document.getElementById("leaderboardList"); l.innerHTML=""; const st=teachers[currentStudent.teacher].students;
+  const arr=[]; for(const s in st){ let sum=0,count=0; st[s].history.forEach(h=>{sum+=h.score;count+=h.total;}); arr.push({name:s,score:count? (sum/count*100).toFixed(1):0}); }
+  arr.sort((a,b)=>b.score-a.score); arr.forEach(e=>{ const li=document.createElement("li"); li.textContent=`${e.name} - ${e.score}%`; l.appendChild(li); }); }
+
+function addNewTeacher(){ const u=document.getElementById("newTeacherName").value.trim(); const p=document.getElementById("newTeacherPass").value;
+  if(!u||!p) return popup("Enter valid details ❌"); if(teachers[u]) return popup("Teacher already exists ❌");
+  teachers[u]={password:p, students:{}, questions:[], songs:[], videos:[], materials:[]}; save(); popup("Teacher added ✅"); }
+</script>
+</body>
+</html>
